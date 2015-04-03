@@ -2706,6 +2706,28 @@
     var version = navigator.userAgent.match(/Version\/(.*?)\s/) || navigator.userAgent.match(/Chrome\/(\d+)/);
     if ((navigator.vendor == "Apple Computer, Inc.") && (version && version[1] < 4 || navigator.platform.slice(0, 2) == "iP") ||
         (navigator.vendor == "Google Inc." && version && version[1] < 8)) {
+        // Utility method, used to parse sizes of different units and (eventually) to add a value to the size.
+        var parseSize = function (size, addition) {
+            var result = null,
+                rest   = null;
+        
+            if (typeof size == "string") {
+                result = size.replace(/([0-9]+)(.*)/, function(match, p1, p2) {
+                    amount = addition ? parseInt(p1) + addition : parseInt(p1);
+                    if (p2 !== "") {
+                        rest = p2;
+                        return amount.toString() + rest;
+                    } else {
+                        return amount.toString();
+                    }
+                });
+            } else {
+                result = addition ? size + addition : size;
+            }
+        
+            return [result, rest];
+        }
+    
         /*\
          * Paper.safari
          [ method ]
@@ -2715,7 +2737,14 @@
          * This method should help with dealing with this bug.
         \*/
         paperproto.safari = function () {
-            var rect = this.rect(-99, -99, this.width + 99, this.height + 99).attr({stroke: "none"});
+            widthInfo = parseSize(this.width, 99);
+            heightInfo = parseSize(this.height, 99);
+            var rect = this.rect(
+              widthInfo[1]  === null ? -99 : "-99" + widthInfo[1],
+              heightInfo[1] === null ? -99 : "-99" + heightInfo[1],
+              widthInfo[0],
+              heightInfo[1]
+            ).attr({stroke: "none"});
             setTimeout(function () {rect.remove();});
         };
     } else {
