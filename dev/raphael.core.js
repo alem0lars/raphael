@@ -2743,7 +2743,7 @@
               widthInfo[1]  === null ? -99 : "-99" + widthInfo[1],
               heightInfo[1] === null ? -99 : "-99" + heightInfo[1],
               widthInfo[0],
-              heightInfo[1]
+              heightInfo[0]
             ).attr({stroke: "none"});
             setTimeout(function () {rect.remove();});
         };
